@@ -15,10 +15,9 @@ const StyledPopover = styled.div<StyledPopoverProps>((props) => ({
 const Popover: React.FC<PopoverProps> = ({
     visible
 }) => {
-    const [isVisible, setVisible] = useState(visible);
     return (
-        <StyledPopover visible={isVisible}>
-            asd
+        <StyledPopover visible={visible}>
+            asdasdsadsdsd
         </StyledPopover>
     )
 }

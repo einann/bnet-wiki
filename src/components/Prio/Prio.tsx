@@ -7,6 +7,10 @@ import { BsFillFlagFill } from "react-icons/bs";
 const StyledPrio = styled.div<PrioProps<string>>((props) => ({
     color: PrioColors[props.dataKey],
     cursor: "pointer",
+
+    "&:hover": {
+        opacity: 0.9,
+    }
 }));
 
 const Prio: React.FC<PrioProps<string>> = ({

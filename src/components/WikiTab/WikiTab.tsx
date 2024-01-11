@@ -10,6 +10,7 @@ import { BsPersonCircle } from "react-icons/bs";
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import Status from "../Status/Status";
 import Prio from "../Prio/Prio";
+import QuickWikiCreate from "../QuickWikiCreate/QuickWikiCreate";
 
 const StyledWikiTab = styled.div<StyledWikiTabProps>((props) => ({
     display: "flex",
@@ -93,6 +94,8 @@ const WikiTab: React.FC = () => {
             <StyledTabContainer>
                 <TabTree allData={_global.treeData} />
             </StyledTabContainer>
+
+            <QuickWikiCreate />
 
         </StyledWikiTab>
     )

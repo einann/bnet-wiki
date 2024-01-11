@@ -11,3 +11,4 @@ export * from "./Error";
 export * from "./Status";
 export * from "./Prio";
 export * from "./Popover";
+export * from "./QuickWikiCreate";
