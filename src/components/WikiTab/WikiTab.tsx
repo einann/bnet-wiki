@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { memo, useCallback, useContext, useEffect } from "react";
 import styled from "styled-components";
 import TabToolbar from "../TabToolbar/TabToolbar";
 import { Colors } from "../../util/colors";
@@ -11,6 +11,8 @@ import { BiDotsVerticalRounded } from "react-icons/bi";
 import Status from "../Status/Status";
 import Prio from "../Prio/Prio";
 import QuickWikiCreate from "../QuickWikiCreate/QuickWikiCreate";
+import ContextMenu from "../ContextMenu/ContextMenu";
+import { WikiRawDataType } from "../../types/wikidata.types";
 
 const StyledWikiTab = styled.div<StyledWikiTabProps>((props) => ({
     display: "flex",
@@ -85,14 +87,28 @@ const StyledVerticalCommentLine = styled.div<StyledCommentLineProps>((props) => 
     border: "1px solid #eee",
 }));
 
+
+
 const WikiTab: React.FC = () => {
-    const { state: { _global } } = useContext(WikiContext);
+    const { state: { _global }, dispatch } = useContext(WikiContext);
+
+    const onOpenContextMenu = (e: React.MouseEvent, item: WikiRawDataType) => {
+        dispatch({
+            type: "onShowPopover", payload: {
+                posX: e.clientX,
+                posY: e.clientY,
+                visible: !_global.popover.visible,
+                child: <ContextMenu item={item} />,
+            }
+        });
+    }
+
     return (
         <StyledWikiTab isLoading={_global.loading} error={_global.error}>
             <TabToolbar />
 
             <StyledTabContainer>
-                <TabTree allData={_global.treeData} />
+                <TabTree allData={_global.treeData} openContextMenu={onOpenContextMenu} />
             </StyledTabContainer>
 
             <QuickWikiCreate />
@@ -102,7 +118,8 @@ const WikiTab: React.FC = () => {
 }
 
 const TabTree: React.FC<TabTreeProps> = ({
-    allData
+    allData,
+    openContextMenu
 }) => {
     return (
         <>
@@ -139,7 +156,7 @@ const TabTree: React.FC<TabTreeProps> = ({
                                     </span>
                                 </StyledTabItemTimeContainer>
 
-                                <div>
+                                <div style={{ padding: "0.25rem", cursor: "pointer" }} onClick={(e) => openContextMenu(e, item)}>
                                     <BiDotsVerticalRounded />
                                 </div>
 
@@ -162,7 +179,7 @@ const TabTree: React.FC<TabTreeProps> = ({
                     </StyledTabItem>
 
                     <StyledVerticalCommentLine treeIndex={item.TREE_INDEX} />
-                    {item.Child && <TabTree allData={item.Child} />}
+                    {item.Child && <TabTree allData={item.Child} openContextMenu={openContextMenu} />}
                 </div>
             ))}
         </>

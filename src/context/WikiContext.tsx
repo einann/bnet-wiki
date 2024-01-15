@@ -2,8 +2,8 @@ import React, { useEffect } from "react";
 import { createContext, useReducer } from "react";
 import { WikiActions, WikiStateProps } from "../types/context.types";
 import { ProviderProps } from "../types/provider.types";
-import { buildWikiTree, findTsidOnSearchQuery, toUpperCaseByTurkish } from "../util/utils";
-import { WikiRawDataType } from "../types/wikidata.types";
+import { buildWikiTree, findTsidOnSearchQuery } from "../util/utils";
+import { defaultWikiCreateModel } from "../constants/constants";
 
 const initialState: WikiStateProps = {
     _global: {
@@ -13,6 +13,15 @@ const initialState: WikiStateProps = {
         error: false,
         rawData: [],
         treeData: [],
+        editorOpen: false,
+        defaultWikiModel: { model: defaultWikiCreateModel },
+        popover: {
+            posX: 0,
+            posY: 0,
+            visible: false,
+            expandUpside: false,
+            child: <span />,
+        },
     },
     _tree: {
         expandedNodes: [],
@@ -48,6 +57,17 @@ const wikiReducer = (state: WikiStateProps, action: WikiActions) => {
                 state = { ...state, _tree: { ...state._tree, visibleNodes: ["ALL"], expandedNodes: [] } };
             }
             return { ...state, _tree: { ...state._tree, searchQuery: action.payload } };
+        case "onShowPopover":
+            const diffX = state._global.popover.posX - action.payload.posX;
+            const diffY = state._global.popover.posY - action.payload.posY;
+            if ((diffX < 25 && diffX > -25) && (diffY < 25 && diffY > -25)) {
+                return { ...state, _global: { ...state._global, popover: { ...state._global.popover, visible: action.payload.visible } } };
+            }
+            return { ...state, _global: { ...state._global, popover: action.payload } };
+        case "setEditorVisible":
+            return { ...state, _global: { ...state._global, editorOpen: action.payload } };
+        case "setDefaultWikiModel":
+            return { ...state, _global: { ...state._global, defaultWikiModel: action.payload } };
         default:
             return state;
     }

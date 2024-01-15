@@ -28,10 +28,13 @@ const GlobalStyle = createGlobalStyle`
         border-radius: 10px;
         width: 10px;
     }
-    
     body ::-webkit-scrollbar-thumb {
         background: #ccc !important;
         border-radius: 10px;
+    }
+    .tox-tinymce {
+        border: 0 !important;
+        border-radius: 0 !important;
     }
 `;
 

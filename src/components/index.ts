@@ -12,3 +12,4 @@ export * from "./Status";
 export * from "./Prio";
 export * from "./Popover";
 export * from "./QuickWikiCreate";
+export * from "./ContextMenu";

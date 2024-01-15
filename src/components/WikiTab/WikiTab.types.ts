@@ -7,6 +7,7 @@ export interface StyledWikiTabProps {
 
 export interface TabTreeProps {
     allData: WikiRawDataType[];
+    openContextMenu: (e: any, item: WikiRawDataType) => void;
 }
 
 export interface StyledTabItemProps {

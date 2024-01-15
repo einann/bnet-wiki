@@ -1,5 +1,5 @@
 export interface TabButtonProps {
     children: React.ReactNode;
-    press?: () => void;
+    press?: (e?: any) => void;
     tooltip?: string;
 }

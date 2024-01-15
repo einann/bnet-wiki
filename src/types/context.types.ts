@@ -1,3 +1,4 @@
+import { WikiEditorProps } from "../components/WikiEditor/WikiEditor.types";
 import { WikiRawDataType } from "./wikidata.types";
 
 // STATE TYPE
@@ -9,6 +10,15 @@ export interface WikiStateProps {
         error: boolean;
         rawData: WikiRawDataType[];
         treeData: WikiRawDataType[];
+        editorOpen: boolean;
+        defaultWikiModel: WikiEditorProps;
+        popover: {
+            posX: number;
+            posY: number;
+            visible: boolean;
+            expandUpside?: boolean;
+            child: React.ReactNode;
+        }
     };
     _tree: {
         expandedNodes: string[];
@@ -72,6 +82,27 @@ interface VisibleNodesProps {
     payload: string;
 }
 
+interface PopoverProps {
+    type: "onShowPopover";
+    payload: {
+        posX: number;
+        posY: number;
+        visible: boolean;
+        expandUpside?: boolean;
+        child: React.ReactNode,
+    }
+}
+
+interface EditorProps {
+    type: "setEditorVisible";
+    payload: boolean;
+}
+
+interface DefaultModelProps {
+    type: "setDefaultWikiModel";
+    payload: WikiEditorProps;
+}
+
 export type WikiActions =
     TreeVisibleProps
     | SelectedNodeProps
@@ -84,3 +115,6 @@ export type WikiActions =
     | CollapseNodeProps
     | SearchQueryProps
     | VisibleNodesProps
+    | PopoverProps
+    | EditorProps
+    | DefaultModelProps

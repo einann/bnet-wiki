@@ -6,6 +6,9 @@ import { CgClose } from "react-icons/cg";
 import { WikiContext } from "../../context/WikiContext";
 import { Colors } from "../../util/colors";
 import { toUpperCaseByTurkish } from "../../util/utils";
+import { defaultWikiCreateModel } from "../../constants/constants";
+import StatusMenu from "../StatusMenu/StatusMenu";
+import StatusFilterMenu from "../StatusFilterMenu/StatusFilterMenu";
 
 const StyledTreeToolbar = styled.div(() => ({
     display: "flex",
@@ -82,7 +85,27 @@ const TreeToolbar: React.FC = () => {
         dispatch({ type: "setSearchQuery", payload: toUpperCaseByTurkish(value) });
     }
 
-    console.log(state._tree)
+    const onOpenEditor = () => {
+        dispatch({ type: "setDefaultWikiModel", payload: { model: defaultWikiCreateModel } });
+        dispatch({ type: "setEditorVisible", payload: true });
+    }
+
+    const onOpenStatusFilterMenu = (e: React.MouseEvent) => {
+        dispatch({
+            type: "onShowPopover", payload: {
+                posX: e.clientX,
+                posY: e.clientY,
+                visible: !state._global.popover.visible,
+                child: <StatusFilterMenu  />
+            }
+        });
+    }
+
+    const onChangeStatus = (TSST: string) => {
+        // setWikiModel({ ...wikiModel, TSST });
+        console.log(TSST)
+        dispatch({ type: "onShowPopover", payload: { posX: 0, posY: 0, visible: false, child: <span /> } });
+    }
 
     return (
         <StyledTreeToolbar>
@@ -116,10 +139,10 @@ const TreeToolbar: React.FC = () => {
                     <TabButton tooltip="Ağaçta ara" press={onOpenSearchInput}>
                         <BiSearch />
                     </TabButton>
-                    <TabButton tooltip="Yeni wiki ekle">
+                    <TabButton tooltip="Yeni wiki ekle" press={onOpenEditor}>
                         <BiMessageSquareAdd />
                     </TabButton>
-                    <TabButton tooltip="Duruma göre filtrele">
+                    <TabButton tooltip="Duruma göre filtrele" press={(e) => onOpenStatusFilterMenu(e)}>
                         <BiFilterAlt />
                     </TabButton>
                     <TabButton tooltip="Yenile" press={onRefresh}>

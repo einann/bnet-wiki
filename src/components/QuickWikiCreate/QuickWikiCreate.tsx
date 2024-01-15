@@ -1,12 +1,15 @@
-import React from "react";
+import React, { FormEvent, useContext, useState } from "react";
 import styled from "styled-components";
 import { MdAttachment } from "react-icons/md";
 import { BsSendFill } from "react-icons/bs";
 import { Colors } from "../../util/colors";
 import Status from "../Status/Status";
 import Prio from "../Prio/Prio";
+import { WikiContext } from "../../context/WikiContext";
+import StatusMenu from "../StatusMenu/StatusMenu";
+import PrioMenu from "../PrioMenu/PrioMenu";
 
-const StyledQuickWikiCreate = styled.div(() => ({
+const StyledQuickWikiCreate = styled.form(() => ({
     display: "flex",
     alignItems: "center",
     columnGap: "1rem",
@@ -40,7 +43,7 @@ const SQWCHeaderInput = styled.input(() => ({
     "&:focus": {
         outline: "none",
     },
-    
+
     "&::placeholder": {
         color: Colors.PRIMARY,
         opacity: 0.5,
@@ -64,17 +67,65 @@ const SQWSendButton = styled.button(() => ({
 }))
 
 const QuickWikiCreate: React.FC = () => {
+    const { state: { _global }, dispatch } = useContext(WikiContext);
+    const [wikiModel, setWikiModel] = useState(_global.defaultWikiModel.model);
+    const onAddWiki = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const tsnm = formData.get("tsnm");
+        console.log(wikiModel)
+        // MTID seçili tab varsa onun TSID'si olacak, yoksa " " olacak.
+    }
+
+    const onChangeStatus = (TSST: string) => {
+        setWikiModel({ ...wikiModel, TSST });
+        dispatch({ type: "onShowPopover", payload: { posX: 0, posY: 0, visible: false, child: <span /> } });
+    }
+
+    const onChangePrio = (PRIO: string) => {
+        setWikiModel({ ...wikiModel, PRIO });
+        dispatch({ type: "onShowPopover", payload: { posX: 0, posY: 0, visible: false, child: <span /> } });
+    }
+
+    const onOpenStatusMenu = (e: React.MouseEvent) => {
+        dispatch({
+            type: "onShowPopover", payload: {
+                posX: e.clientX,
+                posY: e.clientY,
+                visible: !_global.popover.visible,
+                expandUpside: true,
+                child: <StatusMenu change={onChangeStatus} />
+            }
+        });
+    }
+
+    const onOpenPrioMenu = (e: React.MouseEvent) => {
+        dispatch({
+            type: "onShowPopover", payload: {
+                posX: e.clientX,
+                posY: e.clientY,
+                visible: !_global.popover.visible,
+                expandUpside: true,
+                child: <PrioMenu change={onChangePrio} />
+            }
+        });
+    }
+
     return (
-        <StyledQuickWikiCreate>
+        <StyledQuickWikiCreate onSubmit={(e) => onAddWiki(e)}>
             <SQWCAddFile>
                 <MdAttachment />
             </SQWCAddFile>
 
-            <SQWCHeaderInput placeholder="Wiki başlığı girin..." />
+            <SQWCHeaderInput placeholder="Wiki başlığı girin..." name="tsnm" />
 
-            <Status dataKey="0" />
+            <div onClick={(e) => onOpenStatusMenu(e)}>
+                <Status dataKey={wikiModel.TSST} />
+            </div>
 
-            <Prio dataKey="3" />
+            <div onClick={(e) => onOpenPrioMenu(e)}>
+                <Prio dataKey={wikiModel.PRIO} />
+            </div>
 
             <SQWSendButton>
                 <BsSendFill />

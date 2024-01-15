@@ -6,6 +6,9 @@ import styled from "styled-components";
 import { device } from "../../util/breakpoints";
 import Loading from "../Loading/Loading";
 import Error from "../Error/Error";
+import Popover from "../Popover/Popover";
+import WikiEditor from "../WikiEditor/WikiEditor";
+import { defaultWikiCreateModel } from "../../constants/constants";
 
 const StyledWikiContainer = styled.main((props) => ({
     position: "relative",
@@ -28,6 +31,8 @@ const WikiContainer: React.FC = () => {
                 <WikiTab />
                 {_global.loading && <Loading />}
                 {_global.error && <Error />}
+                {_global.popover.visible && <Popover children={_global.popover.child} />}
+                {_global.editorOpen && <WikiEditor model={_global.defaultWikiModel.model} />}
             </StyledWikiContainer>
         </div>
     )
