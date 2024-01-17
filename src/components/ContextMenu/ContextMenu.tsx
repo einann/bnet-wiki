@@ -29,7 +29,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
             TSST: item.TSST,
             PRIO: item.PRIO,
             TSNM: item.TSNM,
-            MESSAGE: b64DecodeUnicode(item.MESSAGE),
+            TSDATA: b64DecodeUnicode(item.TSDATA),
         };
         dispatch({ type: "setDefaultWikiModel", payload: { model } });
         dispatch({ type: "setEditorVisible", payload: true });

@@ -9,7 +9,7 @@ export const buildWikiTree = (data: WikiRawDataType[], id = " ") => {
             if (wiki.MTID === tsid) {
                 wiki.CRDT_PARSED = genericDateFormat(wiki.CRDT, "DD MMM YYYY");
                 wiki.CRTM_PARSED = genericTimeFormat(wiki.CRTM);
-                wiki.MESSAGE_PARSED = b64DecodeUnicode(wiki.MESSAGE);
+                wiki.TSDATA_PARSED = b64DecodeUnicode(wiki.TSDATA);
                 wiki.SQNR = parseInt(wiki.SQNR).toString()
                 wiki.Child = getTreeItems(wiki.TSID)
                 items.push(wiki)
@@ -23,7 +23,7 @@ export const buildWikiTree = (data: WikiRawDataType[], id = " ") => {
         if (wiki.MTID == tMtid) {
             wiki.CRDT_PARSED = genericDateFormat(wiki.CRDT, "DD MMM YYYY");
             wiki.CRTM_PARSED = genericTimeFormat(wiki.CRTM);
-            wiki.MESSAGE_PARSED = b64DecodeUnicode(wiki.MESSAGE);
+            wiki.TSDATA_PARSED = b64DecodeUnicode(wiki.TSDATA);
             wiki.Child = getTreeItems(wiki.TSID)
             arr.push(wiki)
         }
@@ -31,9 +31,9 @@ export const buildWikiTree = (data: WikiRawDataType[], id = " ") => {
     return calculateTreeIndex(arr);
 }
 
-const calculateTreeIndex = (data: WikiRawDataType[], parentTreeIndex = 0) => {
+export const calculateTreeIndex = (data: WikiRawDataType[], parentTreeIndex = 0, subTabOpen?: boolean) => {
     data.forEach(item => {
-        if (item.MTID === " ") {
+        if (item.MTID === " " || subTabOpen) {
             item.TREE_INDEX = 0;
         } else {
             item.TREE_INDEX = parentTreeIndex + 1;
@@ -104,4 +104,63 @@ export const b64DecodeUnicode = (str: string) => {
     decodedString = decodedString.replace("<body>", "");
     decodedString = decodedString.replace("</body>", "");
     return decodedString;
+}
+
+
+export const urlParse = (value: string, grup?: string, type?: string, lover?: string) => {
+    var dizi: any[] = [];
+    if (!value) return [{
+        propertyName: "",
+        operation: "EQ",
+        propertyValue: "",
+        conversionMethodName: "",
+        group: "",
+        tableObject: "",
+    }];
+    var param = value.split('&');
+    param.forEach(function (row, index) {
+        if (row.indexOf("=") > 0) {
+            var value = row.split('=');
+            dizi.push({
+                propertyName: value[0],
+                operation: value[1].split(",").length > 1 ? "IN" : "EQ",
+                propertyValue: value[1]
+            })
+        } else if (row.indexOf("<") > 0) {
+            var value = row.split('<');
+            dizi.push({
+                propertyName: value[0],
+                operation: "LT",
+                propertyValue: value[1]
+            })
+        } else if (row.indexOf(">") > 0) {
+            var value = row.split('>');
+            dizi.push({
+                propertyName: value[0],
+                operation: "GT",
+                propertyValue: value[1]
+            })
+        } else if (row.indexOf("%") > 0) {
+            var value = row.split('%');
+            dizi.push({
+                propertyName: value[0],
+                operation: "CT",
+                propertyValue: value[1]
+            })
+        } else if (row.indexOf("!") > 0) {
+            var value = row.split('!');
+            dizi.push({
+                propertyName: value[0],
+                operation: "NE",
+                propertyValue: value[1]
+            })
+        }
+        if (grup) dizi[index].group = grup;
+        else dizi[index].group = "";
+        if (lover) dizi[index].conversionMethodName = lover;
+        else dizi[index].conversionMethodName = "";
+        dizi[index].tableObject = "";
+
+    })
+    return dizi;
 }

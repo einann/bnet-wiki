@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { styled } from "styled-components";
 import { Colors, StatusColors } from "../../util/colors";
+import { WikiContext } from "../../context/WikiContext";
+import { StatusFilterMenuProps } from "./StatusFilterMenu.types";
 
 const prstDomainModel = [
     {
@@ -111,9 +113,11 @@ const StyledApplyButton = styled.button(() => ({
     }
 }))
 
-const StatusFilterMenu: React.FC = ({ }) => {
-
-    const [selectedStatus, setSelectedStatus] = useState<string[]>([]);
+const StatusFilterMenu: React.FC<StatusFilterMenuProps> = ({
+    source
+}) => {
+    const { state, dispatch } = useContext(WikiContext);
+    const [selectedStatus, setSelectedStatus] = useState<string[]>(source === "tree" ? state._tree.statusFilter : state._tab.statusFilter);
 
     const onSelectStatus = (TSST: string) => {
         if (selectedStatus.includes(TSST)) {
@@ -134,6 +138,11 @@ const StatusFilterMenu: React.FC = ({ }) => {
             const allStatus = prstDomainModel.map(item => item.DOMVL);
             setSelectedStatus(allStatus);
         }
+    }
+
+    const onApplyFilter = () => {
+        dispatch({ type: source === "tree" ? "setTreeStatusFilter" : "setTabStatusFilter", payload: selectedStatus });
+        dispatch({ type: "onShowPopover", payload: { posX: 0, posY: 0, visible: false, child: <span /> } });
     }
 
     return (
@@ -170,7 +179,7 @@ const StatusFilterMenu: React.FC = ({ }) => {
                 </StyledMenuLabel>
             ))}
 
-            <StyledApplyButton>
+            <StyledApplyButton onClick={onApplyFilter}>
                 Uygula
             </StyledApplyButton>
         </>

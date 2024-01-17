@@ -17,3 +17,7 @@ export interface StyledTabItemProps {
 export interface StyledCommentLineProps {
     treeIndex: number;
 }
+
+export interface StyledOpenTabsItemProps {
+    selected: boolean;
+}

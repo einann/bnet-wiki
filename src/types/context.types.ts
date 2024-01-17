@@ -23,8 +23,14 @@ export interface WikiStateProps {
     _tree: {
         expandedNodes: string[];
         searchQuery: string;
-        visibleNodes: string[],
-    }
+        visibleNodes: string[];
+        statusFilter: string[];
+    };
+    _tab: {
+        statusFilter: string[];
+        selectedWikiType: string;
+        openTabs: { TSID: string, TSNM: string }[];
+    };
 }
 
 // PAYLOAD TYPES
@@ -103,6 +109,31 @@ interface DefaultModelProps {
     payload: WikiEditorProps;
 }
 
+interface TreeStatusFilterProps {
+    type: "setTreeStatusFilter";
+    payload: string[];
+}
+
+interface TabStatusFilterProps {
+    type: "setTabStatusFilter";
+    payload: string[];
+}
+
+interface SelectedWikiTypeProps {
+    type: "onSelectWikiType";
+    payload: string;
+}
+
+interface OpenTabProps {
+    type: "onOpenTab";
+    payload: { TSID: string, TSNM: string };
+}
+
+interface CloseTabProps {
+    type: "onCloseTab";
+    payload: string;
+}
+
 export type WikiActions =
     TreeVisibleProps
     | SelectedNodeProps
@@ -118,3 +149,8 @@ export type WikiActions =
     | PopoverProps
     | EditorProps
     | DefaultModelProps
+    | TreeStatusFilterProps
+    | TabStatusFilterProps
+    | SelectedWikiTypeProps
+    | OpenTabProps
+    | CloseTabProps

@@ -8,6 +8,7 @@ import Prio from "../Prio/Prio";
 import { WikiContext } from "../../context/WikiContext";
 import StatusMenu from "../StatusMenu/StatusMenu";
 import PrioMenu from "../PrioMenu/PrioMenu";
+import { addWiki } from "../../service/service";
 
 const StyledQuickWikiCreate = styled.form(() => ({
     display: "flex",
@@ -64,17 +65,31 @@ const SQWSendButton = styled.button(() => ({
     "&:hover": {
         opacity: 0.9,
     }
-}))
+}));
 
 const QuickWikiCreate: React.FC = () => {
-    const { state: { _global }, dispatch } = useContext(WikiContext);
+    const { state: { _global, _tab }, dispatch } = useContext(WikiContext);
     const [wikiModel, setWikiModel] = useState(_global.defaultWikiModel.model);
-    const onAddWiki = (e: FormEvent<HTMLFormElement>) => {
+    const onAddWiki = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         const tsnm = formData.get("tsnm");
-        console.log(wikiModel)
-        // MTID seçili tab varsa onun TSID'si olacak, yoksa " " olacak.
+        const mtid = _global.selectedNode || " ";
+
+        const { TSST, PRIO } = wikiModel;
+        const saveModel = {
+            TSST,
+            PRIO,
+            TSNM: tsnm,
+            MTID: mtid,
+            TSDATA: "",
+            BKTP: "BPID",
+            BKID: "00001864",
+            TSTP: _tab.selectedWikiType,
+        };
+
+        const response = await addWiki([saveModel]);
+        debugger
     }
 
     const onChangeStatus = (TSST: string) => {

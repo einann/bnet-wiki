@@ -45,8 +45,8 @@ export type WikiRawDataType = {
     TGID: null | string;
     STIT: string;
     SQNR: string;
-    MESSAGE: string;
-    MESSAGE_PARSED: string;
+    TSDATA: string;
+    TSDATA_PARSED: string;
     FILES: any[],
     ENDDT: string;
     CRDT: string;

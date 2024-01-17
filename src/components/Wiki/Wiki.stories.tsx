@@ -15,6 +15,6 @@ export const MainWiki: Story = (args) => (
     <Wiki data-testId="wiki-id" {...args} />
 )
 MainWiki.args = {
-    BKTP: "TKID",
-    BKID: "TK0000219719",
+    BKTP: "BPID",
+    BKID: "00001864",
 };

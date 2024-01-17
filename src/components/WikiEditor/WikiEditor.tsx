@@ -125,7 +125,7 @@ const WikiEditor: React.FC<WikiEditorProps> = ({
         }
         else {
             const content = editorRef.current.getContent();
-            const wikiSaveModel = { ...wikiModel, MESSAGE: content };
+            const wikiSaveModel = { ...wikiModel, TSDATA: content };
             console.log(wikiSaveModel)
         }
     };
@@ -164,7 +164,7 @@ const WikiEditor: React.FC<WikiEditorProps> = ({
                     </StyledWikiEditorToolbar>
                     <Editor
                         onInit={(evt, editor) => editorRef.current = editor}
-                        initialValue={wikiModel.MESSAGE}
+                        initialValue={wikiModel.TSDATA}
                         init={{
                             height: 500,
                             menubar: true,

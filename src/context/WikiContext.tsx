@@ -2,13 +2,15 @@ import React, { useEffect } from "react";
 import { createContext, useReducer } from "react";
 import { WikiActions, WikiStateProps } from "../types/context.types";
 import { ProviderProps } from "../types/provider.types";
-import { buildWikiTree, findTsidOnSearchQuery } from "../util/utils";
-import { defaultWikiCreateModel } from "../constants/constants";
+import { buildWikiTree, findTsidOnSearchQuery, urlParse } from "../util/utils";
+import { defaultStatusFilter, defaultWikiCreateModel } from "../constants/constants";
+import { getWiki } from "../service/service";
+import { WikiRawDataType } from "../types/wikidata.types";
 
 const initialState: WikiStateProps = {
     _global: {
         treeVisible: true,
-        selectedNode: " ",
+        selectedNode: "",
         loading: false,
         error: false,
         rawData: [],
@@ -27,6 +29,12 @@ const initialState: WikiStateProps = {
         expandedNodes: [],
         searchQuery: "",
         visibleNodes: ["ALL"],
+        statusFilter: defaultStatusFilter,
+    },
+    _tab: {
+        statusFilter: defaultStatusFilter,
+        selectedWikiType: " ",
+        openTabs: [],
     }
 };
 
@@ -68,6 +76,41 @@ const wikiReducer = (state: WikiStateProps, action: WikiActions) => {
             return { ...state, _global: { ...state._global, editorOpen: action.payload } };
         case "setDefaultWikiModel":
             return { ...state, _global: { ...state._global, defaultWikiModel: action.payload } };
+        case "setTreeStatusFilter":
+            return { ...state, _tree: { ...state._tree, statusFilter: action.payload } };
+        case "setTabStatusFilter":
+            return { ...state, _tab: { ...state._tab, statusFilter: action.payload } };
+        case "onSelectWikiType":
+            return { ...state, _tab: { ...state._tab, selectedWikiType: action.payload } };
+        case "onOpenTab":
+            const alreadyOpen = state._tab.openTabs.find(item => item.TSID === action.payload.TSID);
+            if (!alreadyOpen) return { ...state, _tab: { ...state._tab, openTabs: [...state._tab.openTabs, action.payload] } };
+        case "onCloseTab":
+            if (action.payload === state._global.selectedNode) { // mevcut seçili olan tab kapatılmak isteniyorsa
+                const tabIndex = state._tab.openTabs.findIndex(item => item.TSID === action.payload);
+                if (state._tab.openTabs[tabIndex + 1]) {    // sağ tarafında açılı tab varsa onu seç
+                    return {
+                        ...state,
+                        _global: { ...state._global, selectedNode: state._tab.openTabs[tabIndex + 1].TSID },
+                        _tab: { ...state._tab, openTabs: state._tab.openTabs.filter(item => item.TSID !== action.payload) }
+                    };
+                }
+                else if (state._tab.openTabs[tabIndex - 1]) {   // sol tarafında açılı tab varsa onu seç
+                    return {
+                        ...state,
+                        _global: { ...state._global, selectedNode: state._tab.openTabs[tabIndex - 1].TSID },
+                        _tab: { ...state._tab, openTabs: state._tab.openTabs.filter(item => item.TSID !== action.payload) }
+                    };
+                }
+                else {
+                    return {
+                        ...state,
+                        _global: { ...state._global, selectedNode: "" },
+                        _tab: { ...state._tab, openTabs: state._tab.openTabs.filter(item => item.TSID !== action.payload) }
+                    };
+                }
+            }
+            return { ...state, _tab: { ...state._tab, openTabs: state._tab.openTabs.filter(item => item.TSID !== action.payload) } }
         default:
             return state;
     }
@@ -86,14 +129,15 @@ const fetchData = async (dispatch: React.Dispatch<WikiActions>, payload: string)
     dispatch({ type: "setLoading", payload: true });
     dispatch({ type: "setError", payload: false });
     try {
-        const res = await fetch(`http://localhost:4000/tickets`);
-        const response = await res.json();
-        const tree = buildWikiTree(response);
+        let response: { Data: WikiRawDataType[], Layout: null, Pagination: any } = await getWiki(urlParse(payload), "FullModelDto");
+        response.Data = response.Data.filter(item => item.TSNM !== "denemeWiki");
+        const tree = buildWikiTree(response.Data);
 
-        dispatch({ type: "setRawData", payload: response });
+        dispatch({ type: "setRawData", payload: response.Data });
         dispatch({ type: "setTreeData", payload: tree });
     }
-    catch {
+    catch (error) {
+        console.log(error)
         dispatch({ type: "setError", payload: true });
     }
     finally {

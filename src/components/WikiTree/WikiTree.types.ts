@@ -14,4 +14,5 @@ export interface TreeProps {
 export interface StyledTreeItemProps {
     iterationIndex: number;
     isOnSearchQuery: boolean;
+    isSelected: boolean;
 }

@@ -3,5 +3,7 @@ export const defaultWikiCreateModel = {
     TSST: "0",
     PRIO: "3",
     TSNM: "",
-    MESSAGE: "",
+    TSDATA: "",
 }
+
+export const defaultStatusFilter = ["0", "1", "2", "3"];

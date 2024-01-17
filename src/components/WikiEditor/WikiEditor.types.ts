@@ -5,6 +5,6 @@ export interface WikiEditorProps {
         TSST: string,
         PRIO: string,
         TSNM: string,
-        MESSAGE: string,
+        TSDATA: string,
     }
 }

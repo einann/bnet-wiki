@@ -1,9 +1,9 @@
-import React, { memo, useCallback, useContext, useEffect } from "react";
+import React, { memo, useCallback, useContext, useEffect, useRef } from "react";
 import styled from "styled-components";
 import TabToolbar from "../TabToolbar/TabToolbar";
 import { Colors } from "../../util/colors";
 import { device } from "../../util/breakpoints";
-import { StyledCommentLineProps, StyledTabItemProps, StyledWikiTabProps, TabTreeProps } from "./WikiTab.types";
+import { StyledCommentLineProps, StyledOpenTabsItemProps, StyledTabItemProps, StyledWikiTabProps, TabTreeProps } from "./WikiTab.types";
 import { WikiContext } from "../../context/WikiContext";
 import parse from "html-react-parser";
 import { BsPersonCircle } from "react-icons/bs";
@@ -13,6 +13,8 @@ import Prio from "../Prio/Prio";
 import QuickWikiCreate from "../QuickWikiCreate/QuickWikiCreate";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import { WikiRawDataType } from "../../types/wikidata.types";
+import { buildWikiTree, calculateTreeIndex } from "../../util/utils";
+import { MdClose } from "react-icons/md";
 
 const StyledWikiTab = styled.div<StyledWikiTabProps>((props) => ({
     display: "flex",
@@ -38,7 +40,7 @@ const StyledTabContainer = styled.div(() => ({
     padding: "0 0.5rem 0.5rem 0.5rem",
     overflowX: "hidden",
     wordWrap: "break-word",
-
+    marginTop: "0.5rem",
 }));
 
 const StyledTabItem = styled.div<StyledTabItemProps>((props) => ({
@@ -87,28 +89,100 @@ const StyledVerticalCommentLine = styled.div<StyledCommentLineProps>((props) => 
     border: "1px solid #eee",
 }));
 
+const StyledOpenTabs = styled.div(() => ({
+    marginTop: "0.25rem",
+    backgroundColor: "#f5f8fa",
+    boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+    height: "1.75rem",
+    padding: "0 0.5rem",
+    display: "flex",
+    alignItems: "center",
+    columnGap: "0.5rem",
+    overflowX: "hidden",
+    overflowY: "hidden",
+}));
 
+const StyledOpenTabsItem = styled.div<StyledOpenTabsItemProps>((props) => ({
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    minWidth: "7rem",
+    maxWidth: "7rem",
+    cursor: "pointer",
+    height: "1.75rem",
+    padding: "0 0.25rem",
+    transition: "0.25s",
+    // borderRadius: "5px",
+    borderBottom: props.selected ? "1px solid #446d88" : "0",
+
+    "&:hover": {
+        backgroundColor: "#dde7ee"
+    }
+}));
+
+const StyledTabItemCloseButton = styled.button(() => ({
+    border: "0",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    background: "transparent",
+    marginTop: "0.1rem",
+    cursor: "pointer",
+    padding: "0.25rem",
+    transition: "0.25s",
+    borderRadius: "5px",
+
+    "&:hover": {
+        backgroundColor: "#aac3d4",
+    }
+}));
 
 const WikiTab: React.FC = () => {
-    const { state: { _global }, dispatch } = useContext(WikiContext);
+    const { state, dispatch } = useContext(WikiContext);
+    const filtered = state._global.rawData.filter(item => state._tab.statusFilter.includes(item.TSST) && item.TSTP === state._tab.selectedWikiType);
+    const builded = buildWikiTree(filtered);
+
+    //
+    function findDataInTree(tsid: string, tree: WikiRawDataType[]): WikiRawDataType[] {
+        const result: WikiRawDataType[] = [];
+        const searchData = (item: WikiRawDataType) => {
+            if (item.TSID === tsid) {
+                result.push(item);
+            }
+            if (item.Child && item.Child.length > 0) {
+                item.Child.forEach(child => searchData(child));
+            }
+        };
+        tree.forEach(searchData);
+        return result;
+    }
+    //
+    let tabContent = state._global.treeData;
+    if (state._global.selectedNode) {
+        tabContent = findDataInTree(state._global.selectedNode, state._global.treeData);
+        tabContent = calculateTreeIndex(tabContent, 0, true);
+    }
+
 
     const onOpenContextMenu = (e: React.MouseEvent, item: WikiRawDataType) => {
         dispatch({
             type: "onShowPopover", payload: {
                 posX: e.clientX,
                 posY: e.clientY,
-                visible: !_global.popover.visible,
+                visible: !state._global.popover.visible,
                 child: <ContextMenu item={item} />,
             }
         });
     }
 
     return (
-        <StyledWikiTab isLoading={_global.loading} error={_global.error}>
+        <StyledWikiTab isLoading={state._global.loading} error={state._global.error}>
             <TabToolbar />
 
+            <OpenTabs />
+
             <StyledTabContainer>
-                <TabTree allData={_global.treeData} openContextMenu={onOpenContextMenu} />
+                <TabTree allData={tabContent} openContextMenu={onOpenContextMenu} />
             </StyledTabContainer>
 
             <QuickWikiCreate />
@@ -116,6 +190,50 @@ const WikiTab: React.FC = () => {
         </StyledWikiTab>
     )
 }
+
+
+const OpenTabs: React.FC = () => {
+    const { state: { _global, _tab }, dispatch } = useContext(WikiContext);
+    const closeBtnRef = useRef<any>(null);
+
+    const onSelectTab = (e: any, TSID: string) => {
+        dispatch({ type: "setSelectedNode", payload: TSID });
+    }
+
+    const onCloseTab = (TSID: string) => {
+        dispatch({ type: "onCloseTab", payload: TSID });
+    }
+    // console.log(_global) 
+
+    return (
+        <>
+            {_tab.openTabs.length > 0 && (
+                <StyledOpenTabs>
+                    {_tab.openTabs.map(item => (
+                        <StyledOpenTabsItem
+                            key={item.TSID}
+                            selected={_global.selectedNode === item.TSID}
+                        >
+                            <span style={{
+                                flex: 1,
+                                overflow: "hidden",
+                                whiteSpace: "nowrap",
+                                textOverflow: "ellipsis",
+                                padding: "0.33rem 0",
+                            }} onClick={(e) => onSelectTab(e, item.TSID)}>
+                                {item.TSNM.trim() ? item.TSNM : <span>&nbsp;&nbsp;</span>}
+                            </span>
+                            <StyledTabItemCloseButton onClick={(e) => onCloseTab(item.TSID)} ref={closeBtnRef}>
+                                <MdClose />
+                            </StyledTabItemCloseButton>
+                        </StyledOpenTabsItem>
+                    ))}
+                </StyledOpenTabs>
+            )}
+        </>
+    )
+}
+
 
 const TabTree: React.FC<TabTreeProps> = ({
     allData,
@@ -130,7 +248,7 @@ const TabTree: React.FC<TabTreeProps> = ({
                             <span style={{
                                 color: "#888",
                             }}>
-                                {item.CRUS.BPNM}
+                                {item.CRUS.BPNM || ""}
                             </span>
 
                             <StyledTabItemInfoContainer>
@@ -139,7 +257,7 @@ const TabTree: React.FC<TabTreeProps> = ({
                                     fontWeight: "bold",
                                     color: "#999"
                                 }}>
-                                    {item.RPBP.BPNM}
+                                    {item.RPBP && item.RPBP.BPNM ? item.RPBP.BPNM : ""}
                                 </span>
                                 <span>
                                     <Status dataKey={item.TSST} />
@@ -171,7 +289,7 @@ const TabTree: React.FC<TabTreeProps> = ({
                         </div>
 
                         <div>
-                            {parse(item.MESSAGE_PARSED)}
+                            {parse(item.TSDATA_PARSED)}
                         </div>
 
                         <StyledHorizontalCommentLine treeIndex={item.TREE_INDEX} />

@@ -9,8 +9,9 @@ import { toUpperCaseByTurkish } from "../../util/utils";
 import { defaultWikiCreateModel } from "../../constants/constants";
 import StatusMenu from "../StatusMenu/StatusMenu";
 import StatusFilterMenu from "../StatusFilterMenu/StatusFilterMenu";
+import { StyledTreeToolbarProps } from "./TreeToolbar.types";
 
-const StyledTreeToolbar = styled.div(() => ({
+const StyledTreeToolbar = styled.div<StyledTreeToolbarProps>((props) => ({
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
@@ -96,19 +97,13 @@ const TreeToolbar: React.FC = () => {
                 posX: e.clientX,
                 posY: e.clientY,
                 visible: !state._global.popover.visible,
-                child: <StatusFilterMenu  />
+                child: <StatusFilterMenu source="tree" />
             }
         });
     }
 
-    const onChangeStatus = (TSST: string) => {
-        // setWikiModel({ ...wikiModel, TSST });
-        console.log(TSST)
-        dispatch({ type: "onShowPopover", payload: { posX: 0, posY: 0, visible: false, child: <span /> } });
-    }
-
     return (
-        <StyledTreeToolbar>
+        <StyledTreeToolbar openTabs={state._tab.openTabs.length}>
             <div
                 style={{ marginTop: "0.25rem" }}
             >
