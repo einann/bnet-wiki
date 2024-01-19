@@ -30,7 +30,7 @@ export const Colors: ColorProps = {
     BG_PRIMARY: "#F9F9F9",
 };
 
-export const StatusColors: StatusColorProps = {
+export const StatusColors: any = {
     "0": "#ececec",
     "1": "#ffc480",
     "2": "#ffc480",
@@ -42,7 +42,7 @@ export const StatusColors: StatusColorProps = {
     "I": "#2976a9",
 };
 
-export const PrioColors: PrioColorProps = {
+export const PrioColors: any = {
     "1": "#e44646",
     "2": "#ff7b53",
     "3": "#2a9cd1",

@@ -3,16 +3,8 @@ import { createGlobalStyle } from "styled-components";
 import { WikiProps } from "./Wiki.types";
 import { WikiProvider } from "../../context/WikiContext";
 import WikiContainer from "../WikiContainer/WikiContainer";
-// @ts-ignore
-import Quicksand from "../../asset/fonts/Quicksand.woff2";
-
-
 
 const GlobalStyle = createGlobalStyle`
-    @font-face {
-        font-family: 'Quicksand';
-        src: url('${Quicksand}') format('opentype');
-    }
     html {
         box-sizing: border-box;
     }
@@ -20,7 +12,6 @@ const GlobalStyle = createGlobalStyle`
         box-sizing: inherit;
     }
     body {
-        font-family: 'Quicksand', sans-serif;
         font-weight: 300;
         font-size: 0.8rem;
     }
