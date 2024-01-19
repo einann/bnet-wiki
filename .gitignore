@@ -1,7 +1,5 @@
 node_modules
 
-dist/
-
 .storybook/
 
 src/components/**/*.stories.ts
