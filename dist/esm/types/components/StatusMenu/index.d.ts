@@ -1,1 +1,1 @@
-export * from "./StatusMenu";
+export { default } from "./StatusMenu";

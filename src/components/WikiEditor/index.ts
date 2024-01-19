@@ -1,1 +1,1 @@
-export * from "./WikiEditor";
+export { default } from "./WikiEditor";

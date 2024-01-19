@@ -1,1 +1,1 @@
-export * from "./WikiTree";
+export { default } from "./WikiTree";

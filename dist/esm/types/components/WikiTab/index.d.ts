@@ -1,2 +1,2 @@
-export * from "./WikiTab";
+export { default } from "./WikiTab";
 export * from "./WikiFiles";
