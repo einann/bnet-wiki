@@ -172,7 +172,7 @@ const WikiEditor: React.FC<WikiEditorProps> = ({
                         <StyledWikiEditorHeaderInput
                             value={wikiModel.TSNM}
                             placeholder="Wiki başlığı girin..."
-                            onChange={(e) => setWikiModel({ ...wikiModel, TSNM: e.currentTarget.value })}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setWikiModel({ ...wikiModel, TSNM: e.currentTarget.value })}
                             ref={tsnmRef}
                         />
 
