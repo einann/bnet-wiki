@@ -153,10 +153,15 @@ const fetchData = async (dispatch: React.Dispatch<WikiActions>, payload: string)
         const fileFilter = urlParse(`DCST=X&BKID=${response.Data.map(item => item.TSID)}`);
         const fileResponse: { Data: FileDataType[], Layout: null, Pagination: any } = await getWikiFile(fileFilter);
 
-        response.Data.forEach(item => {
-            const files = fileResponse.Data.filter(file => file.BKID === item.TSID);
-            item.FILES = files;
-        });
+        if (fileResponse.Data) {
+            response.Data.forEach(item => {
+                const files = fileResponse.Data.filter(file => file.BKID === item.TSID);
+                item.FILES = files;
+            });
+        }
+        else {
+            response.Data.forEach(item => item.FILES = []);
+        }
 
         const tree = buildWikiTree(response.Data);
 
