@@ -62,11 +62,12 @@ const StyledMenuItem = styled.li(() => ({
 
 const PrioMenu: React.FC<PrioMenuProps> = ({
     change,
+    source,
 }) => {
     return (
         <>
             {prioDomainModel.map(item => (
-                <StyledMenuItem key={item.DOMVL} onClick={() => change(item.DOMVL)}>
+                <StyledMenuItem key={item.DOMVL} onClick={() => change(item.DOMVL, source)}>
                     <BsFillFlagFill style={{
                         color: PrioColors[item.DOMVL],
                     }} />

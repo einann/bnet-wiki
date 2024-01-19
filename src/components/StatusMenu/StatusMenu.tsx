@@ -102,11 +102,12 @@ const StyledMenuItem = styled.li(() => ({
 
 const StatusMenu: React.FC<StatusMenuProps> = ({
     change,
+    source,
 }) => {
     return (
         <>
             {prstDomainModel.map(item => (
-                <StyledMenuItem key={item.DOMVL} onClick={() => change(item.DOMVL)}>
+                <StyledMenuItem key={item.DOMVL} onClick={() => change(item.DOMVL, source)}>
                     <div style={{
                         padding: "0.33rem",
                         borderRadius: "50%",

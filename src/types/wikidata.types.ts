@@ -27,6 +27,34 @@ export type PRSTDomainModelType = {
 
 export type WikiTaskDataType = ' ' | 'T' | 'S';
 
+export type FileDataType = {
+    BKID: string;
+    BKTP: string;
+    CHDT: string;
+    CHTM: string;
+    CHUS: PersonnelInfoType;
+    CLID: string;
+    CRDT: string;
+    CRTM: string;
+    CRUS: PersonnelInfoType;
+    DCDATA: {
+        CLID: string | null;
+        DCID: string | null;
+        DCDATA: string | null;
+    };
+    DCID: string;
+    DCNM: string;
+    DCSIZE: null | string | number;
+    DCST: string;
+    DCTP: string;
+    DataBase64: string;
+    StreamFile: {
+        DisplayName: null | string;
+        Extension: string;
+        FileName: string;
+    }
+}
+
 export type WikiRawDataType = {
     Child: WikiRawDataType[] | [];
     CLID: string;
@@ -47,7 +75,7 @@ export type WikiRawDataType = {
     SQNR: string;
     TSDATA: string;
     TSDATA_PARSED: string;
-    FILES: any[],
+    FILES: FileDataType[] | [];
     ENDDT: string;
     CRDT: string;
     CRDT_PARSED: string;

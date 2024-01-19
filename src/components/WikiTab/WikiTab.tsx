@@ -1,20 +1,26 @@
-import React, { memo, useCallback, useContext, useEffect, useRef } from "react";
+import React, { useContext, useRef } from "react";
 import styled from "styled-components";
-import TabToolbar from "../TabToolbar/TabToolbar";
+import parse from "html-react-parser";
+
 import { Colors } from "../../util/colors";
 import { device } from "../../util/breakpoints";
 import { StyledCommentLineProps, StyledOpenTabsItemProps, StyledTabItemProps, StyledWikiTabProps, TabTreeProps } from "./WikiTab.types";
 import { WikiContext } from "../../context/WikiContext";
-import parse from "html-react-parser";
 import { BsPersonCircle } from "react-icons/bs";
 import { BiDotsVerticalRounded } from "react-icons/bi";
-import Status from "../Status/Status";
-import Prio from "../Prio/Prio";
-import QuickWikiCreate from "../QuickWikiCreate/QuickWikiCreate";
-import ContextMenu from "../ContextMenu/ContextMenu";
 import { WikiRawDataType } from "../../types/wikidata.types";
 import { buildWikiTree, calculateTreeIndex } from "../../util/utils";
-import { MdClose } from "react-icons/md";
+import { MdAttachFile, MdClose, MdDelete } from "react-icons/md";
+import { delWikiFile, updateWiki } from "../../service/service";
+
+import TabToolbar from "../TabToolbar/TabToolbar";
+import Status from "../Status/Status";
+import Prio from "../Prio/Prio";
+import StatusMenu from "../StatusMenu/StatusMenu";
+import PrioMenu from "../PrioMenu/PrioMenu";
+import QuickWikiCreate from "../QuickWikiCreate/QuickWikiCreate";
+import ContextMenu from "../ContextMenu/ContextMenu";
+import WikiFiles from "./WikiFiles";
 
 const StyledWikiTab = styled.div<StyledWikiTabProps>((props) => ({
     display: "flex",
@@ -141,7 +147,6 @@ const WikiTab: React.FC = () => {
     const { state, dispatch } = useContext(WikiContext);
     const filtered = state._global.rawData.filter(item => state._tab.statusFilter.includes(item.TSST) && item.TSTP === state._tab.selectedWikiType);
     const builded = buildWikiTree(filtered);
-
     //
     function findDataInTree(tsid: string, tree: WikiRawDataType[]): WikiRawDataType[] {
         const result: WikiRawDataType[] = [];
@@ -157,12 +162,30 @@ const WikiTab: React.FC = () => {
         return result;
     }
     //
-    let tabContent = state._global.treeData;
+    let tabContent = builded;
     if (state._global.selectedNode) {
         tabContent = findDataInTree(state._global.selectedNode, state._global.treeData);
         tabContent = calculateTreeIndex(tabContent, 0, true);
     }
 
+    const onUpdateWiki = async (key: "TSST" | "PRIO", value: string, item?: WikiRawDataType) => {
+        dispatch({ type: "onShowPopover", payload: { posX: 0, posY: 0, visible: false, child: <span /> } });
+
+        const payload = Object.assign({}, {
+            ...item,
+            [key]: value,
+        });
+
+        dispatch({ type: "setLoading", payload: true });
+        const response = await updateWiki([payload]);
+        if (response) {
+            dispatch({ type: "refresh" });
+        }
+        else {
+            dispatch({ type: "setLoading", payload: false });
+            dispatch({ type: "onShowMessageToast", payload: { visible: true, type: "error", message: "Wiki güncellenirken bir hata meydana geldi." } });
+        }
+    }
 
     const onOpenContextMenu = (e: React.MouseEvent, item: WikiRawDataType) => {
         dispatch({
@@ -175,6 +198,38 @@ const WikiTab: React.FC = () => {
         });
     }
 
+    const onChangeStatus = async (DOMVL: string, item?: WikiRawDataType) => {
+        await onUpdateWiki("TSST", DOMVL, item);
+    }
+
+    const onOpenStatusMenu = (e: React.MouseEvent, item: WikiRawDataType) => {
+        dispatch({
+            type: "onShowPopover", payload: {
+                posX: e.clientX,
+                posY: e.clientY,
+                visible: !state._global.popover.visible,
+                child: <StatusMenu change={onChangeStatus} source={item} />
+            }
+        });
+    }
+
+    const onChangePrio = async (DOMVL: string, item?: WikiRawDataType) => {
+        await onUpdateWiki("PRIO", DOMVL, item);
+    }
+
+    const onOpenPrioMenu = (e: React.MouseEvent, item: WikiRawDataType) => {
+        dispatch({
+            type: "onShowPopover", payload: {
+                posX: e.clientX,
+                posY: e.clientY,
+                visible: !state._global.popover.visible,
+                child: <PrioMenu change={onChangePrio} source={item} />
+            }
+        });
+    }
+
+    
+
     return (
         <StyledWikiTab isLoading={state._global.loading} error={state._global.error}>
             <TabToolbar />
@@ -182,7 +237,12 @@ const WikiTab: React.FC = () => {
             <OpenTabs />
 
             <StyledTabContainer>
-                <TabTree allData={tabContent} openContextMenu={onOpenContextMenu} />
+                <TabTree
+                    allData={tabContent}
+                    openContextMenu={onOpenContextMenu}
+                    openStatusMenu={onOpenStatusMenu}
+                    openPrioMenu={onOpenPrioMenu}
+                />
             </StyledTabContainer>
 
             <QuickWikiCreate />
@@ -195,7 +255,6 @@ const WikiTab: React.FC = () => {
 const OpenTabs: React.FC = () => {
     const { state: { _global, _tab }, dispatch } = useContext(WikiContext);
     const closeBtnRef = useRef<any>(null);
-
     const onSelectTab = (e: any, TSID: string) => {
         dispatch({ type: "setSelectedNode", payload: TSID });
     }
@@ -203,8 +262,6 @@ const OpenTabs: React.FC = () => {
     const onCloseTab = (TSID: string) => {
         dispatch({ type: "onCloseTab", payload: TSID });
     }
-    // console.log(_global) 
-
     return (
         <>
             {_tab.openTabs.length > 0 && (
@@ -237,7 +294,9 @@ const OpenTabs: React.FC = () => {
 
 const TabTree: React.FC<TabTreeProps> = ({
     allData,
-    openContextMenu
+    openContextMenu,
+    openStatusMenu,
+    openPrioMenu,
 }) => {
     return (
         <>
@@ -259,12 +318,12 @@ const TabTree: React.FC<TabTreeProps> = ({
                                 }}>
                                     {item.RPBP && item.RPBP.BPNM ? item.RPBP.BPNM : ""}
                                 </span>
-                                <span>
+                                <div onClick={(e) => openStatusMenu(e, item)}>
                                     <Status dataKey={item.TSST} />
-                                </span>
-                                <span>
+                                </div>
+                                <div onClick={(e) => openPrioMenu(e, item)}>
                                     <Prio dataKey={item.PRIO} />
-                                </span>
+                                </div>
                                 <StyledTabItemTimeContainer>
                                     <span>
                                         {item.CRDT_PARSED}
@@ -288,16 +347,25 @@ const TabTree: React.FC<TabTreeProps> = ({
                             <span>{item.TSNM}</span>
                         </div>
 
-                        <div>
+                        <div className="wiki-content-container">
                             {parse(item.TSDATA_PARSED)}
                         </div>
+
+                        <WikiFiles item={item} />
 
                         <StyledHorizontalCommentLine treeIndex={item.TREE_INDEX} />
 
                     </StyledTabItem>
 
                     <StyledVerticalCommentLine treeIndex={item.TREE_INDEX} />
-                    {item.Child && <TabTree allData={item.Child} openContextMenu={openContextMenu} />}
+                    {item.Child &&
+                        <TabTree
+                            allData={item.Child}
+                            openContextMenu={openContextMenu}
+                            openStatusMenu={openStatusMenu}
+                            openPrioMenu={openPrioMenu}
+                        />
+                    }
                 </div>
             ))}
         </>

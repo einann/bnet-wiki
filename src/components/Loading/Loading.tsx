@@ -16,6 +16,7 @@ const StyledLoadingContainer = styled.div(() => ({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
+    zIndex: "999",
 }));
 
 const StyledLoading = styled.div`
@@ -29,7 +30,8 @@ const StyledLoading = styled.div`
       radial-gradient(farthest-side, #0000 calc(100% - ${x} - 1px), #000 calc(100% - ${x}));
     -webkit-mask-composite: destination-in;
     animation: ${animation};
-`
+    z-index: 999;
+`;
 
 const Loading: React.FC = () => {
   return (

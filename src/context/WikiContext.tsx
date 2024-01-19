@@ -4,11 +4,12 @@ import { WikiActions, WikiStateProps } from "../types/context.types";
 import { ProviderProps } from "../types/provider.types";
 import { buildWikiTree, findTsidOnSearchQuery, urlParse } from "../util/utils";
 import { defaultStatusFilter, defaultWikiCreateModel } from "../constants/constants";
-import { getWiki } from "../service/service";
-import { WikiRawDataType } from "../types/wikidata.types";
+import { getWiki, getWikiFile } from "../service/service";
+import { FileDataType, WikiRawDataType } from "../types/wikidata.types";
 
 const initialState: WikiStateProps = {
     _global: {
+        bktp_bkid: ["", ""],
         treeVisible: true,
         selectedNode: "",
         loading: false,
@@ -24,6 +25,16 @@ const initialState: WikiStateProps = {
             expandUpside: false,
             child: <span />,
         },
+        toast: {
+            visible: false,
+            type: "default",
+            message: "",
+        },
+        modal: {
+            visible: false,
+            header: "",
+            children: null,
+        }
     },
     _tree: {
         expandedNodes: [],
@@ -40,6 +51,8 @@ const initialState: WikiStateProps = {
 
 const wikiReducer = (state: WikiStateProps, action: WikiActions) => {
     switch (action.type) {
+        case "setTypeAndId":
+            return { ...state, _global: { ...state._global, bktp_bkid: action.payload } };
         case "setTreeVisible":
             return { ...state, _global: { ...state._global, treeVisible: action.payload } };
         case "setSelectedNode":
@@ -111,6 +124,10 @@ const wikiReducer = (state: WikiStateProps, action: WikiActions) => {
                 }
             }
             return { ...state, _tab: { ...state._tab, openTabs: state._tab.openTabs.filter(item => item.TSID !== action.payload) } }
+        case "onShowMessageToast":
+            return { ...state, _global: { ...state._global, toast: action.payload } };
+        case "onShowModal":
+            return { ...state, _global: { ...state._global, modal: action.payload } };
         default:
             return state;
     }
@@ -131,10 +148,21 @@ const fetchData = async (dispatch: React.Dispatch<WikiActions>, payload: string)
     try {
         let response: { Data: WikiRawDataType[], Layout: null, Pagination: any } = await getWiki(urlParse(payload), "FullModelDto");
         response.Data = response.Data.filter(item => item.TSNM !== "denemeWiki");
+        response.Data = response.Data.filter(item => item.TSDATA !== null);
+
+        const fileFilter = urlParse(`DCST=X&BKID=${response.Data.map(item => item.TSID)}`);
+        const fileResponse: { Data: FileDataType[], Layout: null, Pagination: any } = await getWikiFile(fileFilter);
+
+        response.Data.forEach(item => {
+            const files = fileResponse.Data.filter(file => file.BKID === item.TSID);
+            item.FILES = files;
+        });
+
         const tree = buildWikiTree(response.Data);
 
         dispatch({ type: "setRawData", payload: response.Data });
         dispatch({ type: "setTreeData", payload: tree });
+
     }
     catch (error) {
         console.log(error)
@@ -152,6 +180,10 @@ export const WikiProvider: React.FC<ProviderProps> = ({
     children
 }) => {
     const [state, dispatch] = useReducer<React.Reducer<WikiStateProps, WikiActions>>(wikiReducer, initialState);
+
+    useEffect(() => {
+        dispatch({ type: "setTypeAndId", payload: [BKTP, BKID] });
+    }, [BKTP, BKID]);
 
     const enhancedDispatch = (action: WikiActions) => {
         dispatch(action);

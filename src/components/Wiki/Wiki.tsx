@@ -36,6 +36,9 @@ const GlobalStyle = createGlobalStyle`
         border: 0 !important;
         border-radius: 0 !important;
     }
+    .wiki-content-container > p {
+        margin: 0;
+    }
 `;
 
 const Wiki: React.FC<WikiProps> = ({
@@ -45,7 +48,7 @@ const Wiki: React.FC<WikiProps> = ({
     return (
         <WikiProvider BKTP={BKTP} BKID={BKID}>
             <GlobalStyle />
-            <WikiContainer />
+            <WikiContainer/>
         </WikiProvider>
     )
 }

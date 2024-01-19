@@ -8,7 +8,8 @@ import Loading from "../Loading/Loading";
 import Error from "../Error/Error";
 import Popover from "../Popover/Popover";
 import WikiEditor from "../WikiEditor/WikiEditor";
-import { defaultWikiCreateModel } from "../../constants/constants";
+import MessageToast from "../MessageToast/MessageToast";
+import Modal from "../Modal/Modal";
 
 const StyledWikiContainer = styled.main((props) => ({
     position: "relative",
@@ -23,7 +24,7 @@ const StyledWikiContainer = styled.main((props) => ({
 }))
 
 const WikiContainer: React.FC = () => {
-    const { state: { _global } } = useContext(WikiContext);
+    const { state: { _global }, dispatch } = useContext(WikiContext);
     return (
         <div style={{ width: "100%", height: "35rem" }}>
             <StyledWikiContainer>
@@ -33,6 +34,9 @@ const WikiContainer: React.FC = () => {
                 {_global.error && <Error />}
                 {_global.popover.visible && <Popover children={_global.popover.child} />}
                 {_global.editorOpen && <WikiEditor model={_global.defaultWikiModel.model} />}
+                {_global.toast.visible && <MessageToast type={_global.toast.type} message={_global.toast.message} />}
+
+                {_global.modal.visible && <Modal children={_global.modal.children} />}
             </StyledWikiContainer>
         </div>
     )

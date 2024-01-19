@@ -9,6 +9,7 @@ import { WikiContext } from '../../context/WikiContext';
 import StatusMenu from '../StatusMenu/StatusMenu';
 import PrioMenu from '../PrioMenu/PrioMenu';
 import { WikiEditorProps } from './WikiEditor.types';
+import { addWiki, updateWiki } from '../../service/service';
 
 
 const StyledWikiEditorOverlay = styled.div(() => ({
@@ -32,7 +33,6 @@ const StyledWikiEditorWrapper = styled.div(() => ({
 const StyledWikiEditorContainer = styled.div(() => ({
     display: "flex",
     flexDirection: "column",
-
 }));
 
 const StyledWikiEditorToolbar = styled.div(() => ({
@@ -116,7 +116,7 @@ const WikiEditor: React.FC<WikiEditorProps> = ({
         });
     }
 
-    const onAddWiki = () => {
+    const onAddWiki = async () => {
         if (!wikiModel.TSNM.trim()) {
             tsnmRef.current.focus();
         }
@@ -125,12 +125,43 @@ const WikiEditor: React.FC<WikiEditorProps> = ({
         }
         else {
             const content = editorRef.current.getContent();
-            const wikiSaveModel = { ...wikiModel, TSDATA: content };
-            console.log(wikiSaveModel)
+            const wikiSaveModel = { ...wikiModel, TSDATA: btoa(content) };
+
+            dispatch({ type: "setLoading", payload: true });
+            // Yeni wiki ekleme
+            if (!wikiSaveModel.TSID) {
+                const finalSaveModel = Object.assign({}, {
+                    ...wikiSaveModel,
+                    BKTP: _global.bktp_bkid[0],
+                    BKID: _global.bktp_bkid[1],
+                    TSTP: " ",
+                });
+                const response = await addWiki([finalSaveModel]);
+                if (response) {
+                    dispatch({ type: "setEditorVisible", payload: false });
+                    dispatch({ type: "onShowMessageToast", payload: { visible: true, type: "success", message: "Wiki başarıyla oluşturuldu." } });
+                    dispatch({ type: "refresh" });
+                }
+                else {
+                    dispatch({ type: "setLoading", payload: false });
+                    dispatch({ type: "onShowMessageToast", payload: { visible: true, type: "error", message: "Wiki oluşturulurken bir hata meydana geldi." } });
+                }
+            }
+            // Güncelleme
+            else {
+                const response = await updateWiki([wikiSaveModel]);
+                if (response) {
+                    dispatch({ type: "setEditorVisible", payload: false });
+                    dispatch({ type: "onShowMessageToast", payload: { visible: true, type: "success", message: "Wiki başarıyla güncellendi." } });
+                    dispatch({ type: "refresh" });
+                }
+                else {
+                    dispatch({ type: "setLoading", payload: false });
+                    dispatch({ type: "onShowMessageToast", payload: { visible: true, type: "error", message: "Wiki güncellenirken bir hata meydana geldi." } });
+                }
+            }
         }
     };
-
-    console.log(wikiModel)
 
     return (
         <StyledWikiEditorOverlay>

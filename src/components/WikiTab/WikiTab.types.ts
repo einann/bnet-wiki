@@ -8,6 +8,8 @@ export interface StyledWikiTabProps {
 export interface TabTreeProps {
     allData: WikiRawDataType[];
     openContextMenu: (e: any, item: WikiRawDataType) => void;
+    openStatusMenu: (e: any, item: WikiRawDataType) => void;
+    openPrioMenu: (e: any, item: WikiRawDataType) => void;
 }
 
 export interface StyledTabItemProps {
@@ -20,4 +22,8 @@ export interface StyledCommentLineProps {
 
 export interface StyledOpenTabsItemProps {
     selected: boolean;
+}
+
+export interface WikiFilesProps {
+    item: WikiRawDataType;
 }

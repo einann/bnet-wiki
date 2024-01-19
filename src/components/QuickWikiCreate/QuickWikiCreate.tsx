@@ -1,4 +1,4 @@
-import React, { FormEvent, useContext, useState } from "react";
+import React, { FormEvent, useContext, useRef, useState } from "react";
 import styled from "styled-components";
 import { MdAttachment } from "react-icons/md";
 import { BsSendFill } from "react-icons/bs";
@@ -9,6 +9,8 @@ import { WikiContext } from "../../context/WikiContext";
 import StatusMenu from "../StatusMenu/StatusMenu";
 import PrioMenu from "../PrioMenu/PrioMenu";
 import { addWiki } from "../../service/service";
+import MessageToast from "../MessageToast/MessageToast";
+import FileAdd from "../FileAdd/FileAdd";
 
 const StyledQuickWikiCreate = styled.form(() => ({
     display: "flex",
@@ -70,6 +72,7 @@ const SQWSendButton = styled.button(() => ({
 const QuickWikiCreate: React.FC = () => {
     const { state: { _global, _tab }, dispatch } = useContext(WikiContext);
     const [wikiModel, setWikiModel] = useState(_global.defaultWikiModel.model);
+    const qwInputRef = useRef<HTMLInputElement>(null);
     const onAddWiki = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
@@ -83,13 +86,24 @@ const QuickWikiCreate: React.FC = () => {
             TSNM: tsnm,
             MTID: mtid,
             TSDATA: "",
-            BKTP: "BPID",
-            BKID: "00001864",
+            BKTP: _global.bktp_bkid[0],
+            BKID: _global.bktp_bkid[1],
             TSTP: _tab.selectedWikiType,
         };
 
+        dispatch({ type: "setLoading", payload: true });
         const response = await addWiki([saveModel]);
-        debugger
+        if (response) {
+            dispatch({ type: "refresh" });
+            setWikiModel({ ...wikiModel, TSNM: "" });
+            if (qwInputRef.current) {
+                qwInputRef.current.value = "";
+            }
+        }
+        else {
+            dispatch({ type: "setLoading", payload: false });
+            dispatch({ type: "onShowMessageToast", payload: { visible: true, type: "error", message: "Bir hata meydana geldi." } });
+        }
     }
 
     const onChangeStatus = (TSST: string) => {
@@ -126,13 +140,21 @@ const QuickWikiCreate: React.FC = () => {
         });
     }
 
+    // const onAddFile = () => {
+    //     dispatch({ type: "onShowModal", payload: { visible: true, header: "Dosya Ekle", children: <FileAdd /> } })
+    // }
+
     return (
         <StyledQuickWikiCreate onSubmit={(e) => onAddWiki(e)}>
-            <SQWCAddFile>
+            {/* <SQWCAddFile type="button" onClick={onAddFile}>
                 <MdAttachment />
-            </SQWCAddFile>
+            </SQWCAddFile> */}
 
-            <SQWCHeaderInput placeholder="Wiki başlığı girin..." name="tsnm" />
+            <SQWCHeaderInput
+                placeholder="Wiki başlığı girin..."
+                name="tsnm"
+                ref={qwInputRef}
+            />
 
             <div onClick={(e) => onOpenStatusMenu(e)}>
                 <Status dataKey={wikiModel.TSST} />

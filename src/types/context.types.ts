@@ -4,6 +4,7 @@ import { WikiRawDataType } from "./wikidata.types";
 // STATE TYPE
 export interface WikiStateProps {
     _global: {
+        bktp_bkid: [string, string];
         treeVisible: boolean;
         selectedNode: string;
         loading: boolean;
@@ -18,7 +19,17 @@ export interface WikiStateProps {
             visible: boolean;
             expandUpside?: boolean;
             child: React.ReactNode;
-        }
+        };
+        toast: {
+            visible: boolean;
+            type?: "success" | "error" | "info" | "warning" | "default";
+            message: string;
+        };
+        modal: {
+            visible: boolean;
+            header: string;
+            children: React.ReactNode;
+        };
     };
     _tree: {
         expandedNodes: string[];
@@ -34,6 +45,11 @@ export interface WikiStateProps {
 }
 
 // PAYLOAD TYPES
+interface BKTP_BKID_Props {
+    type: "setTypeAndId";
+    payload: [string, string];
+};
+
 interface TreeVisibleProps {
     type: "setTreeVisible";
     payload: boolean;
@@ -134,8 +150,27 @@ interface CloseTabProps {
     payload: string;
 }
 
+interface ShowMessageToastProps {
+    type: "onShowMessageToast";
+    payload: {
+        visible: boolean;
+        type?: "success" | "error" | "info" | "warning" | "default";
+        message: string;
+    }
+}
+
+interface ShowModalProps {
+    type: "onShowModal";
+    payload: {
+        visible: boolean;
+        header: string;
+        children: React.ReactNode;
+    }
+}
+
 export type WikiActions =
-    TreeVisibleProps
+    BKTP_BKID_Props
+    | TreeVisibleProps
     | SelectedNodeProps
     | LoadingProps
     | ErrorProps
@@ -154,3 +189,5 @@ export type WikiActions =
     | SelectedWikiTypeProps
     | OpenTabProps
     | CloseTabProps
+    | ShowMessageToastProps
+    | ShowModalProps

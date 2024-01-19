@@ -130,7 +130,7 @@ const Tree: React.FC<TreeProps> = ({
 
                         <div>
                             <Status dataKey={item.TSST} />
-                            <BiDotsVerticalRounded />
+                            {/* <BiDotsVerticalRounded /> */}
                         </div>
                     </StyledTreeItem>
                     {item.Child && <Tree allData={item.Child} expanded={_tree.expandedNodes.includes(item.TSID)} />}
