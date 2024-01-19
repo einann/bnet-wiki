@@ -20,7 +20,7 @@ import StatusMenu from "../StatusMenu/StatusMenu";
 import PrioMenu from "../PrioMenu/PrioMenu";
 import QuickWikiCreate from "../QuickWikiCreate/QuickWikiCreate";
 import ContextMenu from "../ContextMenu/ContextMenu";
-import WikiFiles from "./WikiFiles";
+import WikiFiles from "../WikiFiles/WikiFiles";
 
 const StyledWikiTab = styled.div<StyledWikiTabProps>((props) => ({
     display: "flex",
