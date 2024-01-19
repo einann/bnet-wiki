@@ -125,7 +125,7 @@ const WikiEditor: React.FC<WikiEditorProps> = ({
         }
         else {
             const content = editorRef.current.getContent();
-            const wikiSaveModel = { ...wikiModel, TSDATA: btoa(content) };
+            const wikiSaveModel = { ...wikiModel, TSDATA: btoa(encodeURIComponent(content)) };      // encodeUriComponent sonra btoa yapmayı dene.
 
             dispatch({ type: "setLoading", payload: true });
             // Yeni wiki ekleme

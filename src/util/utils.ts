@@ -95,7 +95,7 @@ const genericTimeFormat = (date: string, format?: string) => {
 
 export const b64DecodeUnicode = (str: string) => {
     // Going backwards: from bytestream, to percent-encoding, to original string.
-    let decodedString = decodeURIComponent(atob(str).split('').map(function (c) {
+    let decodedString = decodeURIComponent(decodeURIComponent(atob(str)).split('').map(function (c) {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
     }).join(''));
 
