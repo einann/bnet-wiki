@@ -1,6 +1,7 @@
 import React from "react";
 import { Meta, StoryObj } from "@storybook/react";
 import Wiki from "./Wiki";
+import { WikiProps } from "./Wiki.types";
 
 const meta: Meta<typeof Wiki> = {
     component: Wiki,
@@ -11,7 +12,7 @@ export default meta;
 
 type Story = StoryObj<typeof Wiki>;
 
-export const MainWiki: Story = (args) => (
+export const MainWiki: Story = (args: React.JSX.IntrinsicAttributes & WikiProps) => (
     <Wiki data-testId="wiki-id" {...args} />
 )
 MainWiki.args = {

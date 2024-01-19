@@ -1,2 +1,10 @@
+import React from 'react';
 
-export {  }
+interface WikiProps {
+    BKTP: string;
+    BKID: string;
+}
+
+declare const Wiki: React.FC<WikiProps>;
+
+export { Wiki };

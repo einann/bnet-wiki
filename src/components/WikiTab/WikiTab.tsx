@@ -280,7 +280,7 @@ const OpenTabs: React.FC = () => {
                             }} onClick={(e) => onSelectTab(e, item.TSID)}>
                                 {item.TSNM.trim() ? item.TSNM : <span>&nbsp;&nbsp;</span>}
                             </span>
-                            <StyledTabItemCloseButton onClick={(e) => onCloseTab(item.TSID)} ref={closeBtnRef}>
+                            <StyledTabItemCloseButton onClick={() => onCloseTab(item.TSID)} ref={closeBtnRef}>
                                 <MdClose />
                             </StyledTabItemCloseButton>
                         </StyledOpenTabsItem>

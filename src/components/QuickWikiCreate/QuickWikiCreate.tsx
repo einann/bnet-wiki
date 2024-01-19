@@ -145,7 +145,7 @@ const QuickWikiCreate: React.FC = () => {
     // }
 
     return (
-        <StyledQuickWikiCreate onSubmit={(e) => onAddWiki(e)}>
+        <StyledQuickWikiCreate onSubmit={(e: React.FormEvent<HTMLFormElement>) => onAddWiki(e)}>
             {/* <SQWCAddFile type="button" onClick={onAddFile}>
                 <MdAttachment />
             </SQWCAddFile> */}

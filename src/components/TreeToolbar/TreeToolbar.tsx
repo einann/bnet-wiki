@@ -122,7 +122,7 @@ const TreeToolbar: React.FC = () => {
                 }}>
                     <StyledSearchInput
                         ref={searchInputRef}
-                        onChange={(e) => onSearchQuery(e.currentTarget.value)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSearchQuery(e.currentTarget.value)}
                     />
                     <StyledSearchClose onClick={onCloseSearchInput}>
                         <CgClose />

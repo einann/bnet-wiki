@@ -199,7 +199,7 @@ const FileAdd: React.FC<FileAddProps> = ({
                         id="upload-files"
                         type="file"
                         multiple
-                        onChange={(e) => onSelectFiles(e.target.files)}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onSelectFiles(e.target.files)}
                         ref={fileInputRef}
                     />
                 </div>
