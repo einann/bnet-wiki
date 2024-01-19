@@ -46,8 +46,8 @@ const Popover: React.FC<PopoverProps> = ({
     return (
         // dinamik değerleri props ile gönderince tüm componentler flicker oluyor.
         <StyledPopover style={{
-            top: `${popover.expandUpside ? (popover.posY - height - 15) : (popover.posY - 15)}px`,
-            left: `${popover.posX - 175}px`,
+            top: `${popover.expandUpside ? (popover.posY - height - 45) : (popover.posY - 15)}px`,
+            left: `${popover.posX - 100}px`,
         }} ref={popoverRef}>
             {children}
         </StyledPopover>
