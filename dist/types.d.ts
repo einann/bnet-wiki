@@ -182,8 +182,14 @@ interface WikiEditorProps {
 
 declare const WikiEditor: React$1.FC<WikiEditorProps>;
 
+interface WikiFilesProps {
+    item: WikiRawDataType;
+}
+
+declare const WikiFiles: React$1.FC<WikiFilesProps>;
+
 declare const WikiTab: React$1.FC;
 
 declare const WikiTree: React$1.FC;
 
-export { ContextMenu, Error, Loading, MessageToast, Modal, Popover, Prio, PrioMenu, QuickWikiCreate, Status, StatusFilterMenu, StatusMenu, TabButton, TabToolbar, ToggleButton, TreeToolbar, Wiki, WikiContainer, WikiEditor, WikiTab, WikiTree };
+export { ContextMenu, Error, Loading, MessageToast, Modal, Popover, Prio, PrioMenu, QuickWikiCreate, Status, StatusFilterMenu, StatusMenu, TabButton, TabToolbar, ToggleButton, TreeToolbar, Wiki, WikiContainer, WikiEditor, WikiFiles, WikiTab, WikiTree };

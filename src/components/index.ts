@@ -17,5 +17,6 @@ export { default as TreeToolbar } from "./TreeToolbar";
 export { default as Wiki } from "./Wiki";
 export { default as WikiContainer } from "./WikiContainer";
 export { default as WikiEditor } from "./WikiEditor";
+export { default as WikiFiles } from "./WikiFiles";
 export { default as WikiTab } from "./WikiTab";
 export { default as WikiTree } from "./WikiTree";
