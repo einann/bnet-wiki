@@ -1,1 +1,1 @@
-export * from "./FileAdd";
+export { default } from "./FileAdd";

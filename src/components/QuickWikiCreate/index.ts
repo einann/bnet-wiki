@@ -1,1 +1,1 @@
-export * from "./QuickWikiCreate";
+export { default } from "./QuickWikiCreate";

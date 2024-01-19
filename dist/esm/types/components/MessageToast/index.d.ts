@@ -1,1 +1,1 @@
-export * from "./MessageToast";
+export { default } from "./MessageToast";

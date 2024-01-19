@@ -1,1 +1,1 @@
-export * from "./Prio";
+export { default } from "./Prio";

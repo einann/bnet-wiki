@@ -1,1 +1,1 @@
-export * from "./TabToolbar";
+export { default } from "./TabToolbar";

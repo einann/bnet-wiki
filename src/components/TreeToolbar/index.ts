@@ -1,1 +1,1 @@
-export * from "./TreeToolbar";
+export { default } from "./TreeToolbar";

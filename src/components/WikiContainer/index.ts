@@ -1,1 +1,1 @@
-export * from "./WikiContainer";
+export { default } from "./WikiContainer";
