@@ -169,8 +169,6 @@ const WikiTab: React.FC = () => {
     }
 
     const onUpdateWiki = async (key: "TSST" | "PRIO", value: string, item?: WikiRawDataType) => {
-        dispatch({ type: "onShowPopover", payload: { posX: 0, posY: 0, visible: false, child: <span /> } });
-
         const payload = Object.assign({}, {
             ...item,
             [key]: value,
@@ -188,7 +186,6 @@ const WikiTab: React.FC = () => {
     }
 
     const onOpenContextMenu = (e: React.MouseEvent, item: WikiRawDataType) => {
-        console.log(e)
         dispatch({
             type: "onShowPopover", payload: {
                 posX: e.clientX,

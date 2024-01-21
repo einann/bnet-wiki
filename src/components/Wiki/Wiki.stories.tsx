@@ -17,5 +17,5 @@ export const MainWiki: Story = (args: React.JSX.IntrinsicAttributes & WikiProps)
 )
 MainWiki.args = {
     BKTP: "BPID",
-    BKID: "00002027",
+    BKID: "00001864",
 };

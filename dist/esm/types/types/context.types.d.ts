@@ -17,6 +17,7 @@ export interface WikiStateProps {
             posY: number;
             visible: boolean;
             expandUpside?: boolean;
+            multiSelect?: boolean;
             child: React.ReactNode;
         };
         toast: {
@@ -99,6 +100,7 @@ interface PopoverProps {
         posY: number;
         visible: boolean;
         expandUpside?: boolean;
+        multiSelect?: boolean;
         child: React.ReactNode;
     };
 }

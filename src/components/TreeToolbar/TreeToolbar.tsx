@@ -97,7 +97,8 @@ const TreeToolbar: React.FC = () => {
                 posX: e.clientX,
                 posY: e.clientY,
                 visible: !state._global.popover.visible,
-                child: <StatusFilterMenu source="tree" />
+                multiSelect: true,
+                child: <StatusFilterMenu source="tree" />,
             }
         });
     }

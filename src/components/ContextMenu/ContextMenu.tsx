@@ -43,7 +43,6 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
         };
         dispatch({ type: "setDefaultWikiModel", payload: { model } });
         dispatch({ type: "setEditorVisible", payload: true });
-        dispatch({ type: "onShowPopover", payload: { posX: 0, posY: 0, visible: false, child: <span /> } });
     }
 
     const onReplyWiki = (item: WikiRawDataType) => {
@@ -53,16 +52,13 @@ const ContextMenu: React.FC<ContextMenuProps> = ({
         });
         dispatch({ type: "setDefaultWikiModel", payload: { model } });
         dispatch({ type: "setEditorVisible", payload: true });
-        dispatch({ type: "onShowPopover", payload: { posX: 0, posY: 0, visible: false, child: <span /> } });
     }
 
     const onAddFile = (TSID: string) => {
-        dispatch({ type: "onShowPopover", payload: { posX: 0, posY: 0, visible: false, child: <span /> } });
         dispatch({ type: "onShowModal", payload: { visible: true, header: "Dosya Ekle", children: <FileAdd TSID={TSID} /> } });
     }
 
     const onDeleteWiki = async (TSID: string) => {
-        dispatch({ type: "onShowPopover", payload: { posX: 0, posY: 0, visible: false, child: <span /> } });
         dispatch({ type: "setLoading", payload: true });
         const response = await delWiki([TSID]);
         if (response) {

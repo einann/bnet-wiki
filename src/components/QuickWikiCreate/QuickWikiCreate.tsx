@@ -108,12 +108,10 @@ const QuickWikiCreate: React.FC = () => {
 
     const onChangeStatus = (TSST: string) => {
         setWikiModel({ ...wikiModel, TSST });
-        dispatch({ type: "onShowPopover", payload: { posX: 0, posY: 0, visible: false, child: <span /> } });
     }
 
     const onChangePrio = (PRIO: string) => {
         setWikiModel({ ...wikiModel, PRIO });
-        dispatch({ type: "onShowPopover", payload: { posX: 0, posY: 0, visible: false, child: <span /> } });
     }
 
     const onOpenStatusMenu = (e: React.MouseEvent) => {

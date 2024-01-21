@@ -41,14 +41,24 @@ const Popover: React.FC<PopoverProps> = ({
         if (popoverRef.current && !popoverRef.current.contains(e.target)) {
             dispatch({ type: "onShowPopover", payload: { posX: 0, posY: 0, visible: false, child: <span /> } });
         }
-    };
+    }
+
+    const onHidePopover = () => {
+        if (!popover.multiSelect) {
+            dispatch({ type: "onShowPopover", payload: { posX: 0, posY: 0, visible: false, child: <span /> } });
+        }
+    }
 
     return (
         // dinamik değerleri props ile gönderince tüm componentler flicker oluyor.
-        <StyledPopover style={{
-            top: `${popover.expandUpside ? (popover.posY - height - 25) : (popover.posY)}px`,
-            left: `${popover.posX - 100}px`,
-        }} ref={popoverRef}>
+        <StyledPopover
+            style={{
+                top: `${popover.expandUpside ? (popover.posY - height - 25) : (popover.posY)}px`,
+                left: `${popover.posX - 100}px`,
+            }}
+            ref={popoverRef}
+            onClick={onHidePopover}
+        >
             {children}
         </StyledPopover>
     )

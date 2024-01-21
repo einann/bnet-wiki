@@ -23,6 +23,7 @@ const initialState: WikiStateProps = {
             posY: 0,
             visible: false,
             expandUpside: false,
+            multiSelect: false,
             child: <span />,
         },
         toast: {

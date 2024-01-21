@@ -47,7 +47,8 @@ const TabToolbar: React.FC = () => {
                 posX: e.clientX,
                 posY: e.clientY,
                 visible: !_global.popover.visible,
-                child: <StatusFilterMenu source="tab" />
+                child: <StatusFilterMenu source="tab" />,
+                multiSelect: true,
             }
         });
     }

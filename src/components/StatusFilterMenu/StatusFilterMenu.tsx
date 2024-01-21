@@ -142,7 +142,7 @@ const StatusFilterMenu: React.FC<StatusFilterMenuProps> = ({
 
     const onApplyFilter = () => {
         dispatch({ type: source === "tree" ? "setTreeStatusFilter" : "setTabStatusFilter", payload: selectedStatus });
-        dispatch({ type: "onShowPopover", payload: { posX: 0, posY: 0, visible: false, child: <span /> } });
+        dispatch({ type: "onShowPopover", payload: { posX: 0, posY: 0, visible: false, child: null } });
     }
 
     return (
