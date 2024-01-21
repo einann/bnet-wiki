@@ -5,7 +5,7 @@ import { WikiContext } from "../../context/WikiContext";
 import { PopoverProps } from "./Popover.types";
 
 const StyledPopover = styled.ul(() => ({
-    position: "absolute",
+    position: "fixed",
     display: "flex",
     flexDirection: "column",
     color: Colors.PRIMARY,
@@ -46,7 +46,7 @@ const Popover: React.FC<PopoverProps> = ({
     return (
         // dinamik değerleri props ile gönderince tüm componentler flicker oluyor.
         <StyledPopover style={{
-            top: `${popover.expandUpside ? (popover.posY - height - 45) : (popover.posY - 15)}px`,
+            top: `${popover.expandUpside ? (popover.posY - height - 25) : (popover.posY)}px`,
             left: `${popover.posX - 100}px`,
         }} ref={popoverRef}>
             {children}

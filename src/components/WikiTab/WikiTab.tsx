@@ -188,6 +188,7 @@ const WikiTab: React.FC = () => {
     }
 
     const onOpenContextMenu = (e: React.MouseEvent, item: WikiRawDataType) => {
+        console.log(e)
         dispatch({
             type: "onShowPopover", payload: {
                 posX: e.clientX,

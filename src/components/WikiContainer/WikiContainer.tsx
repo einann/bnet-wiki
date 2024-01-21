@@ -26,7 +26,7 @@ const StyledWikiContainer = styled.main((props) => ({
 const WikiContainer: React.FC = () => {
     const { state: { _global }, dispatch } = useContext(WikiContext);
     return (
-        <div style={{ width: "100%", height: "35rem" }}>
+        <div style={{ width: "100%", height: "35rem", }}>
             <StyledWikiContainer>
                 <WikiTree />
                 <WikiTab />
